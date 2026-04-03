@@ -1,7 +1,5 @@
 import processing.sound.*;
-//SoundFile uiMusic;
-//SoundFile acceptClick;
-//SoundFile backClick;
+
 
 class Menu {
   //for displaying submenus
@@ -16,14 +14,21 @@ class Menu {
   //previous highscores
   int highscore1;
   int highscore2;
+  
+  //sound variables
+  PApplet parent;
+  SoundFile uiMusic;
+  SoundFile acceptClick;
+  SoundFile backClick;
 
-  Menu() {
+  Menu(PApplet p) {
     //initiaze submenu states, buttons, and highscores
+    parent = p;
     instructions = false;
     highscores = false;
-    title = new Button(400, 100, 200, 100, "Florida Fever", 30, 80, color(255));
-    easy = new Button(200, 300, 150, 75, "easy mode", 30, 65, color(0, 255, 0));
-    hard = new Button(600, 300, 150, 75, "hard mode", 30, 65, color(255, 0, 0));
+    title = new Button(400, 100, 200, 100, "Swamp Mash", 30, 80, color(255));
+    easy = new Button(200, 300, 150, 75, "level mode", 20, 55, color(0, 255, 0));
+    hard = new Button(600, 300, 150, 75, "endless mode", 20, 65, color(255, 0, 0));
     i = new Button(200, 400, 150, 75, "how to play", 20, 55, color(255, 255, 0));
     h = new Button(600, 400, 150, 75, "highscores", 20, 45, color(0, 255, 255));
     int[]scores = getHighscores();
@@ -31,18 +36,18 @@ class Menu {
     highscore2 = scores[1];
 
     //load music
-    //uiMusic = new SoundFile(this, "Assets/Audio/MenuMusic.wav");
-    //uiMusic.loop();
+    uiMusic = new SoundFile(parent, "Assets/Audio/MenuMusic.wav");
+    uiMusic.loop();
     
     //load sounds
-    //acceptClick = new SoundFile(this, "Assets/Audio/Menu1Select.wav");
-    //backClick = new SoundFile(this, "Assets/Audio/Menu1Back.wav");
+    acceptClick = new SoundFile(parent, "Assets/Audio/Menu1Select.wav");
+    backClick = new SoundFile(parent, "Assets/Audio/Menu1Back.wav");
   }
 
   int[] getHighscores() {
     //read scores file and find max value for easy and hard game modes
-    //index 0: highscore for easy games
-    //index 1: highscore for hard games
+    //index 0: highscore for level games
+    //index 1: highscore for endless games
     int[] ret = {0, 0};
     BufferedReader r = createReader("scores.txt");
     String line = null;
@@ -81,7 +86,7 @@ class Menu {
       rect(400, 300, 600, 400);
       textSize(30);
       fill(0);
-      text("Easy Mode Highscore:\n" + str(highscore1) + "\n\nHard Mode HighScore:\n" + str(highscore2), 180, 180);
+      text("Level Mode Highscore:\n" + str(highscore1) + "\n\nEndless Mode HighScore:\n" + str(highscore2), 180, 180);
     }
   }
 
@@ -89,28 +94,28 @@ class Menu {
     //close submenus if open
     if (instructions) {
       instructions = false;
-      //backClick.play();
+      backClick.play();
       return 0;
     } else if (highscores) {
       highscores = false;
-      //backClick.play();
+      backClick.play();
       return 0;
     }
     //button functionality
     else {
       if (easy.within(x, y)) {
+        acceptClick.play();
         return 1;
-        //acceptClick.play();
       } // start easy game
       if (hard.within(x, y)) {
-        //acceptClick.play();
+        acceptClick.play();
         return 2;
       } // start hard game
       if (i.within(x, y)) {instructions = true;
-        //acceptClick.play();  
+        acceptClick.play();  
       } // open instuctions submenu
       if (h.within(x, y)) {highscores = true;
-        //acceptClick.play();  
+        acceptClick.play();  
       } // open highscore submenu
       return 0;
     }
