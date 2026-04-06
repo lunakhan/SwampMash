@@ -33,19 +33,28 @@ class Board{
         initBoard();
     }
 
-    void initBoard(){// fill grid with random tiles}
+    void initBoard(){// fill grid with random tiles
+  }
 
-    void display(){// draw all tiles on board}
+    void display(){// draw all tiles on board
+  }
 
-    void selectTile(int c, int r){//player click tile}
+    void selectTile(int c, int r){//player click tile
+  }
 
-    boolean swapTiles(Tile a, Tile b){//swap tile with button}
+    boolean swapTiles(Tile a, Tile b){//swap tile with button
+    return false; //placeholder
+  }
 
     ArrayList<Tile> findMatches(){
         // 3+ matching tiles
+        return new ArrayList<Tile>(); //placeholder
     }
 
-    int clearMatches(ArrayList<Tile> matched) {//remove matched tiles}
+    int clearMatches(ArrayList<Tile> matched) {//remove matched tiles
+    return 0; //placeholder
+  }
 
-    void dropTiles(){//tiles falling down}
+    void dropTiles(){//tiles falling down
+  }
 }
