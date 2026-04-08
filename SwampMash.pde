@@ -10,6 +10,10 @@ Menu m;
 Board b;
 PImage background;
 
+public class Constants {
+  static final int cellSize = 55;
+}
+
 void setup() {
   size(800, 600);
   gamestate = 0;
@@ -23,9 +27,8 @@ void draw() {
   if (gamestate == 0) m.display();
   else if (gamestate == 1) {
     background(background);
-    for (int i = 0; i < 8; i++) {
-      Tile t = new Tile(0, 0, i);
-      t.display(50 + i * 90, 200, 75);
+    if (b != null) {
+      b.display();
     }
   }
 }
@@ -33,10 +36,12 @@ void draw() {
 void mousePressed() {
   if (gamestate == 0) {
     gamestate = m.processClick(mouseX, mouseY);
+    if ((gamestate == 1) && b == null) {
+      b = new Board(this);
+    }
     if (gamestate != 0) {
       print("switching gamestate to: ");
       print(gamestate);
     }
   }
 }
-

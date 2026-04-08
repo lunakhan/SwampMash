@@ -14,7 +14,7 @@ class Menu {
   //previous highscores
   int highscore1;
   int highscore2;
-  
+
   //sound variables
   PApplet parent;
   SoundFile uiMusic;
@@ -38,7 +38,7 @@ class Menu {
     //load music
     uiMusic = new SoundFile(parent, "Assets/Audio/MenuMusic.wav");
     uiMusic.loop();
-    
+
     //load sounds
     acceptClick = new SoundFile(parent, "Assets/Audio/Menu1Select.wav");
     backClick = new SoundFile(parent, "Assets/Audio/Menu1Back.wav");
@@ -111,11 +111,13 @@ class Menu {
         acceptClick.play();
         return 2;
       } // start hard game
-      if (i.within(x, y)) {instructions = true;
-        acceptClick.play();  
+      if (i.within(x, y)) {
+        instructions = true;
+        acceptClick.play();
       } // open instuctions submenu
-      if (h.within(x, y)) {highscores = true;
-        acceptClick.play();  
+      if (h.within(x, y)) {
+        highscores = true;
+        acceptClick.play();
       } // open highscore submenu
       return 0;
     }
