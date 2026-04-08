@@ -24,8 +24,8 @@ class Board {
     rows = 8;
     cols = 8;
     cellSize = Constants.cellSize;
-    boardX = 150;
-    boardY = 75;
+    boardX = 20;
+    boardY = height/2 - (cellSize * rows)/2;
 
     grid = new Tile[cols][rows];
     selectedTile = null;

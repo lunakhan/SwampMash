@@ -8,25 +8,27 @@ int gamestate;
 
 Menu m;
 Board b;
-PImage background;
+PImage backgroundImg;
 
 public class Constants {
-  static final int cellSize = 55;
+  static final int cellSize = 70;
 }
 
 void setup() {
   size(800, 600);
   gamestate = 0;
   m = new Menu(this);
-  background = loadImage("background.png");
-  background.resize(800, 600);
+  backgroundImg = loadImage("background.png");
 }
 
 void draw() {
   background(150);
   if (gamestate == 0) m.display();
   else if (gamestate == 1) {
-    background(background);
+    //changed bcz I was getting an error w/macbook screen for some reason idk
+    if (backgroundImg != null) {
+      image(backgroundImg, 0, 0, width, height);
+    }
     if (b != null) {
       b.display();
     }
