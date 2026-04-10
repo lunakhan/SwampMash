@@ -56,12 +56,15 @@ class Tile {
   int getType() {
     return type;
   }
+  
+  void setSelect(boolean b){selected = b;}
 
 
   boolean matches(Tile other) {
     //check if this tile's type = another tile
     return other.getType() == type;
   }
+  
 }
 
 Tile getRandomTile() {

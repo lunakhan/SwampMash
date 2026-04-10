@@ -19,7 +19,7 @@ class Board {
   Tile selectedTile;
 
   // Constructor - initializes the board with random tiles
-  // need to use PApplet to load images?
+  // need to use PApplet to load images? I don't think so, just for sound
   Board(PApplet parent) {
     rows = 8;
     cols = 8;
@@ -44,9 +44,13 @@ class Board {
 
   void display() {// draw all tiles on board
     //draw a simple grid background with alternating checkerboard pattern
+    //draw yellow background if tile is selected
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
-        if ((i + j) % 2 == 0) {
+        if(grid[i][j].selected){
+          fill(200,200,0);
+        }
+        else if ((i + j) % 2 == 0) {
           fill(100);
         } else {
           fill(150);
@@ -62,7 +66,20 @@ class Board {
     }
   }
 
-  void selectTile(int c, int r) {//player click tile
+  void selectTile(int x, int y) {//player click tile
+    //reset all tiles to not selected
+    for (int i = 0; i < cols; i++) {
+      for (int j = 0; j < rows; j++) {
+        grid[i][j].setSelect(false);
+      }
+    }
+    //translate to col&row
+    int col = (x - boardX) / cellSize;
+    int row = (y - boardY) / cellSize;
+    //select tile if in range
+    if((col >= 0 && col < cols) && (row >= 0 && row < rows)){
+      grid[col][row].setSelect(true);
+    }
   }
 
   boolean swapTiles(Tile a, Tile b) {//swap tile with button

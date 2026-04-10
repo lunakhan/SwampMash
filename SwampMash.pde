@@ -46,4 +46,7 @@ void mousePressed() {
       print(gamestate);
     }
   }
+  else if(gamestate == 1 || gamestate == 2){
+    b.selectTile(mouseX,mouseY);
+  }
 }
