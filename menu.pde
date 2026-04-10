@@ -1,5 +1,5 @@
 import processing.sound.*;
-
+PImage menuBackground;
 
 class Menu {
   //for displaying submenus
@@ -35,6 +35,9 @@ class Menu {
     highscore1 = scores[0];
     highscore2 = scores[1];
 
+    //load background image
+    menuBackground = parent.loadImage("menu_background.png");
+
     //load music
     uiMusic = new SoundFile(parent, "Assets/Audio/MenuMusic.wav");
     uiMusic.loop();
@@ -66,8 +69,7 @@ class Menu {
 
   void display() {
     //display background and colors
-    background(50, 50, 200);
-    title.display();
+    image(menuBackground, 0, 0, width, height);
     easy.display();
     hard.display();
     i.display();
