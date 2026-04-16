@@ -51,7 +51,7 @@ class Menu {
     //load sounds
     acceptClick = new SoundFile(parent, "Assets/Audio/Menu1Select.wav");
     backClick = new SoundFile(parent, "Assets/Audio/Menu1Back.wav");
-    
+
     // load level 2 unlock state
     level2Unlocked = loadUnlockState();
     // re-read scores to also grab level 2 highscore
@@ -88,14 +88,14 @@ class Menu {
     image(menuBackground, 0, 0, width, height);
 
     //Draw albert in the middle
-   if (albertImg != null) {
-    imageMode(CENTER);
-    float targetW = 300; 
-    float aspect = (float) albertImg.height / (float) albertImg.width;
-    float targetH = targetW * aspect;
-    image(albertImg, width/2, height/2 + 160, targetW, targetH);
-    imageMode(CORNER);
-}
+    if (albertImg != null) {
+      imageMode(CENTER);
+      float targetW = 300;
+      float aspect = (float) albertImg.height / (float) albertImg.width;
+      float targetH = targetW * aspect;
+      image(albertImg, width/2, height/2 + 160, targetW, targetH);
+      imageMode(CORNER);
+    }
     //label flips once level 2 is unlocked
     easy.s = level2Unlocked ? "level 2" : "level 1";
     easy.display();
@@ -106,22 +106,26 @@ class Menu {
     //display submenus if state is correct
     if (instructions) {
       fill(255, 255, 0);
+      rectMode(CENTER);
       rect(400, 300, 600, 400);
       textSize(30);
       fill(0);
-      text("Get as high of a score as you can\nwithin the time limit! \n\nUse the mouse to select a tile\n\nAfter selecting a tile, use the arrow\nkeys to swap the tile with an adjacent tile\n\nGet 3 or more in a row to clear tiles!", 180, 180);
+      textAlign(CENTER, CENTER);
+      text("Get as high of a score as you can\nwithin the time limit! \n\nUse the mouse to select a tile\n\nAfter selecting a tile, use the arrow\nkeys to swap the tile with an adjacent tile\n\nGet 3 or more in a row to clear tiles!", 400, 300);
     }
     if (highscores) {
       fill(0, 255, 255);
+      rectMode(CENTER);
       rect(400, 300, 600, 400);
       textSize(30);
       fill(0);
+      textAlign(CENTER, CENTER);
       String hsText = "Level 1 Highscore:\n" + str(highscore1)
-                    + "\n\nEndless Highscore:\n" + str(highscore2);
+        + "\n\nEndless Highscore:\n" + str(highscore2);
       if (level2Unlocked) {
         hsText += "\n\nLevel 2 Highscore:\n" + str(highscore3);
       }
-      text(hsText, 180, 180);
+      text(hsText, 400, 300);
     }
   }
 
@@ -158,20 +162,20 @@ class Menu {
       return 0;
     }
   }
-  
+
   void refreshHighscores() {
     int[] scores = getHighscores();
     highscore1 = scores[0];
     highscore2 = scores[1];
     highscore3 = scores[2];
   }
-  
+
   boolean loadUnlockState() {
     String[] lines = loadStrings("unlocks.txt");
     if (lines == null || lines.length == 0) return false;
     return lines[0].trim().equals("level2");
   }
-  
+
   void unlockLevel2() {
     if (level2Unlocked) return;   // already unlocked, no need to rewrite
     level2Unlocked = true;

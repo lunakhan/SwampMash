@@ -38,9 +38,10 @@ class Button {
     translate(x, y);
     fill(c);
     rect(0, 0, width, height);
+    textAlign(CENTER, CENTER);
     textSize(textSize);
     fill(0);
-    text(s, -pushBack, 0);
+    text(s, 0, 0);
     popMatrix();
   }
 }

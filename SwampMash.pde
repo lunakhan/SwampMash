@@ -32,8 +32,7 @@ void draw() {
       // poll for end conditions
       if (b.isTimeUp() || b.reachedTarget()) endGame();
     }
-  }
-  else if (gamestate == 3) {
+  } else if (gamestate == 3) {
     // game over diaply
     if (backgroundImg != null) image(backgroundImg, 0, 0, width, height);
     if (b != null) b.display();
@@ -81,11 +80,20 @@ void keyPressed() {
   // input only during active gameplay
   if (b != null && (gamestate == 1 || gamestate == 2 || gamestate == 4)) {
     boolean swapped = false;
-    if (keyCode == UP)         { b.swapTiles('u'); swapped = true; }
-    else if (keyCode == DOWN)  { b.swapTiles('d'); swapped = true; }
-    else if (keyCode == LEFT)  { b.swapTiles('l'); swapped = true; }
-    else if (keyCode == RIGHT) { b.swapTiles('r'); swapped = true; }
-    if (swapped) b.processMatches();
+    if (keyCode == UP) {
+      b.swapTiles('u');
+      swapped = true;
+    } else if (keyCode == DOWN) {
+      b.swapTiles('d');
+      swapped = true;
+    } else if (keyCode == LEFT) {
+      b.swapTiles('l');
+      swapped = true;
+    } else if (keyCode == RIGHT) {
+      b.swapTiles('r');
+      swapped = true;
+    }
+    if (swapped) b.processMatches(true);
   }
 }
 
