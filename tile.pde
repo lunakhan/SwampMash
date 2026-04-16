@@ -35,21 +35,21 @@ class Tile {
     // update tile's icon type and image
     type = newType;
     if (type == 0) {
-      img = loadImage("dragonfly.png");
+      img = loadImage("Assets/art/dragonfly.png");
     } else if (type == 1) {
-      img = loadImage("frog.png");
+      img = loadImage("Assets/art/frog.png");
     } else if (type == 2) {
-      img = loadImage("fish.png");
+      img = loadImage("Assets/art/fish.png");
     } else if (type == 3) {
-      img = loadImage("turtle.png");
+      img = loadImage("Assets/art/turtle.png");
     } else if (type == 4) {
-      img = loadImage("shoebill.png");
+      img = loadImage("Assets/art/shoebill.png");
     } else if (type == 5) {
-      img = loadImage("beaver.png");
+      img = loadImage("Assets/art/beaver.png");
     } else if (type == 6) {
-      img = loadImage("snake.png");
+      img = loadImage("Assets/art/snake.png");
     } else if (type == 7) {
-      img = loadImage("razorback.png");
+      img = loadImage("Assets/art/razorback.png");
     }
   }
 
