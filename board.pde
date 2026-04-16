@@ -72,17 +72,62 @@ class Board {
         grid[i][j].setSelect(false);
       }
     }
+    selectedTile = null;
     //translate to col&row
     int col = (x - boardX) / cellSize;
     int row = (y - boardY) / cellSize;
     //select tile if in range
     if ((col >= 0 && col < cols) && (row >= 0 && row < rows)) {
       grid[col][row].setSelect(true);
+      selectedTile = grid[col][row];
     }
   }
 
-  boolean swapTiles(Tile a, Tile b) {//swap tile with button
-    return false; //placeholder
+  void swapTiles(char c) {//swap tile with button
+    //ignore if no tile selected
+    if(selectedTile == null) return;
+    //grab selected tile info
+    int sRow = selectedTile.row;
+    int sCol = selectedTile.col;
+    //get rid of current selected tile
+    selectedTile.setSelect(false);
+    selectedTile = null;
+    if(c == 'u'){
+      if(sRow != 0){ //oob check
+        Tile temp = grid[sCol][sRow];
+        grid[sCol][sRow] = grid[sCol][sRow - 1];
+        grid[sCol][sRow - 1] = temp;
+        grid[sCol][sRow - 1].row -= 1;
+        grid[sCol][sRow].row += 1;
+      }
+    }
+    if(c == 'd'){
+      if(sRow != rows - 1){ //oob check
+        Tile temp = grid[sCol][sRow];
+        grid[sCol][sRow] = grid[sCol][sRow + 1];
+        grid[sCol][sRow + 1] = temp;
+        grid[sCol][sRow + 1].row += 1;
+        grid[sCol][sRow].row -= 1;
+      }
+    }
+    if(c == 'l'){
+      if(sCol != 0){ //oob check
+        Tile temp = grid[sCol][sRow];
+        grid[sCol][sRow] = grid[sCol - 1][sRow];
+        grid[sCol - 1][sRow] = temp;
+        grid[sCol - 1][sRow].col -= 1;
+        grid[sCol][sRow].col += 1;
+      }
+    }
+    if(c == 'r'){
+      if(sCol != cols - 1){ //oob check
+        Tile temp = grid[sCol][sRow];
+        grid[sCol][sRow] = grid[sCol + 1][sRow];
+        grid[sCol + 1][sRow] = temp;
+        grid[sCol + 1][sRow].col += 1;
+        grid[sCol][sRow].col -= 1;
+      }
+    }
   }
 
   //https://www.geeksforgeeks.org/dsa/flood-fill-algorithm/

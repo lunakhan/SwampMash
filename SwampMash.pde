@@ -56,3 +56,14 @@ void mousePressed() {
     }
   }
 }
+
+void keyPressed(){
+  //only works if in gameplay
+  if(b != null){
+    //pass to board if arrow key
+    if(keyCode == UP) b.swapTiles('u');
+    else if(keyCode == DOWN) b.swapTiles('d');
+    else if(keyCode == LEFT) b.swapTiles('l');
+    else if(keyCode == RIGHT) b.swapTiles('r');
+  }
+}
