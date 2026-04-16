@@ -147,18 +147,94 @@ class Board {
 
   //idk if this is right
   ArrayList<Tile> findMatches(int x, int y) {
-    //check all tiles for matches using DFS
+    //find horizontal and vertical matches that are 3+ 
     ArrayList<Tile> matched = new ArrayList<Tile>();
     if (x < 0 || x >= cols || y < 0 || y >= rows) return matched;
-    Tile t = grid[x][y];
-    dfs(x, y, matched, t.getType());
+    int type = grid[x][y].getType();
+    
+    // run length scan: https://catlikecoding.com/unity/tutorials/prototypes/match-3/
+    //find horizontal run bounds
+    int left = x;
+    int right = x;
+    while (left - 1 >= 0 && grid[left - 1][y].getType() == type) left--;
+    while (right + 1 < cols && grid[right + 1][y].getType() == type) right++;
+    //find vertical run bounds
+    int up = y;
+    int down = y;
+    while (up - 1 >= 0 && grid[x][up - 1].getType() == type) up--;
+    while (down + 1 < rows && grid[x][down + 1].getType() == type) down++;
+  
+    //add horizontal run if 3+ in a row
+    if (right - left + 1 >= 3) {
+      for (int i = left; i <= right; i++) {
+        matched.add(grid[i][y]);
+      }
+    }
+    //add vertical run if 3+ in a column
+    if (down - up + 1 >= 3) {
+      for (int j = up; j <= down; j++) {
+        //skip center tile if already added from horizontal run (L/T shape)
+        if (!matched.contains(grid[x][j])) matched.add(grid[x][j]);
+      }
+    }
+  
     return matched;
   }
+  
+  
+  ArrayList<Tile> findAllMatches() {
+  //scan entire board
+  ArrayList<Tile> all = new ArrayList<Tile>();
+  for (int i = 0; i < cols; i++) {
+    for (int j = 0; j < rows; j++) {
+      ArrayList<Tile> m = findMatches(i, j);
+      for (int k = 0; k < m.size(); k++) {
+        if (!all.contains(m.get(k))) all.add(m.get(k));
+      }
+    }
+  }
+  return all;
+}
 
-  int clearMatches(ArrayList<Tile> matched) {//remove matched tiles
-    return 0; //placeholder
+  void processMatches() {
+    // find/clear/drop/refill in a loop until there aren't cascades
+    ArrayList<Tile> matches = findAllMatches();
+    while (matches.size() > 0) {
+      print("found a match of size: ");
+      println(matches.size());
+      clearMatches(matches);
+      dropTiles();
+      matches = findAllMatches();
+    }
   }
 
-  void dropTiles() {//tiles falling down
+  int clearMatches(ArrayList<Tile> matched) {
+  //null grid spots of matched tiles
+  for (int i = 0; i < matched.size(); i++) {
+    Tile t = matched.get(i);
+    grid[t.col][t.row] = null;
   }
+  return matched.size(); //return count for scoring later
+}
+
+  void dropTiles() {
+  //for each column, shift non-null tiles down and refill empty spots at top
+  for (int i = 0; i < cols; i++) {
+    int writeRow = rows - 1;
+    //pass from bottom to top
+    for (int j = rows - 1; j >= 0; j--) {
+      if (grid[i][j] != null) {
+        grid[i][writeRow] = grid[i][j];
+        grid[i][writeRow].setPosition(i, writeRow);
+        writeRow--;
+      }
+    }
+    //fill empty spots up top with new tiles
+    while (writeRow >= 0) {
+      grid[i][writeRow] = getRandomTile();
+      grid[i][writeRow].setPosition(i, writeRow);
+      writeRow--;
+    }
+  }
+}
 }

@@ -46,25 +46,19 @@ void mousePressed() {
       print(gamestate);
     }
   } else if (gamestate == 1 || gamestate == 2) {
-    //in-game
+    // in-game: click only selects, no match logic here
     b.selectTile(mouseX, mouseY);
-    ArrayList<Tile> matches = b.findMatches(b.selectedTile.col, b.selectedTile.row);
-    if (matches.size() > 0) {
-      //debug msg
-      print("found a match of size: ");
-      println(matches.size());
-    }
   }
 }
 
 void keyPressed() {
-  //only works if in gameplay
   if (b != null) {
-    //pass to board if arrow key
-    if (keyCode == UP) b.swapTiles('u');
-    else if (keyCode == DOWN) b.swapTiles('d');
-    else if (keyCode == LEFT) b.swapTiles('l');
-    else if (keyCode == RIGHT) b.swapTiles('r');
+    boolean swapped = false;
+    if (keyCode == UP)         { b.swapTiles('u'); swapped = true; }
+    else if (keyCode == DOWN)  { b.swapTiles('d'); swapped = true; }
+    else if (keyCode == LEFT)  { b.swapTiles('l'); swapped = true; }
+    else if (keyCode == RIGHT) { b.swapTiles('r'); swapped = true; }
+
+    if (swapped) b.processMatches();
   }
 }
-
