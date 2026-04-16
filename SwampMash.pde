@@ -45,8 +45,14 @@ void mousePressed() {
       print("switching gamestate to: ");
       print(gamestate);
     }
-  }
-  else if(gamestate == 1 || gamestate == 2){
-    b.selectTile(mouseX,mouseY);
+  } else if (gamestate == 1 || gamestate == 2) {
+    //in-game
+    b.selectTile(mouseX, mouseY);
+    ArrayList<Tile> matches = b.findMatches(b.selectedTile.col, b.selectedTile.row);
+    if (matches.size() > 0) {
+      //debug msg
+      print("found a match of size: ");
+      println(matches.size());
+    }
   }
 }
