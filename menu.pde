@@ -41,6 +41,9 @@ class Menu {
     //load background image
     menuBackground = parent.loadImage("menu_background.png");
 
+    //load albert icon
+    albertImg = parent.loadImage("albert.png");
+
     //load music
     uiMusic = new SoundFile(parent, "Assets/Audio/MenuMusic.wav");
     uiMusic.loop();
