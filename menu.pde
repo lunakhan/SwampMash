@@ -118,10 +118,17 @@ class Menu {
         acceptClick.play();
       } // open instuctions submenu
       if (h.within(x, y)) {
+        refreshHighscores();   // re-read file so new scores appear
         highscores = true;
         acceptClick.play();
       } // open highscore submenu
       return 0;
     }
+  }
+  
+  void refreshHighscores() {
+    int[] scores = getHighscores();
+    highscore1 = scores[0];
+    highscore2 = scores[1];
   }
 }

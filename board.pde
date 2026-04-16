@@ -4,6 +4,14 @@ class Board {
   //grid dimensions
   int rows;
   int cols;
+  
+  //timer and scores
+  int score;
+  int startTimeMs;
+  boolean isLevelMode;
+  int timeLimitMs;
+  int targetScore;
+  Button quitBtn;
 
   //2D array of tiles
   Tile[][] grid;
@@ -20,17 +28,27 @@ class Board {
 
   // Constructor - initializes the board with random tiles
   // need to use PApplet to load images? I don't think so, just for sound
-  Board(PApplet parent) {
+  Board(PApplet parent, int mode) {
     rows = 8;
     cols = 8;
     cellSize = Constants.cellSize;
     boardX = 20;
     boardY = height/2 - (cellSize * rows)/2;
-
+  
     grid = new Tile[cols][rows];
     selectedTile = null;
     creatureImages = new PImage[8];
     initBoard();
+  
+    // timer and score
+    score = 0;
+    isLevelMode = (mode == 1);
+    startTimeMs = millis();
+    timeLimitMs = 60000;   // 60 seconds for level mode
+    targetScore = 50;     // winning target for level mode
+    
+    // quit to save scores into txt
+    quitBtn = new Button(700, 380, 160, 55, "Quit & Save", 20, 70, color(200, 50, 50));
   }
 
   void initBoard() {// fill grid with random tiles
@@ -63,6 +81,76 @@ class Board {
         grid[i][j].display(boardX + i * cellSize, boardY + j * cellSize, cellSize);
       }
     }
+    displayHUD();
+  }
+  
+  void displayHUD() {
+    rectMode(CORNER);
+    textAlign(LEFT, TOP);
+  
+    int hudX = boardX + cols * cellSize + 30;
+    int hudY = boardY;
+  
+    // score panel
+    fill(0, 180);
+    rect(hudX - 5, hudY - 5, 180, 70);
+    fill(255);
+    textSize(22);
+    text("Score", hudX, hudY);
+    textSize(36);
+    text(score, hudX, hudY + 28);
+  
+    if (isLevelMode) {
+      // timer panel
+      int hudY2 = hudY + 90;
+      fill(0, 180);
+      rect(hudX - 5, hudY2 - 5, 180, 70);
+      int secs = timeRemainingMs() / 1000;
+      fill(secs <= 10 ? color(255, 80, 80) : color(255));
+      textSize(22);
+      text("Time", hudX, hudY2);
+      textSize(36);
+      text(secs + "s", hudX, hudY2 + 28);
+  
+      // target panel
+      int hudY3 = hudY2 + 90;
+      fill(0, 180);
+      rect(hudX - 5, hudY3 - 5, 180, 70);
+      fill(255);
+      textSize(22);
+      text("Target", hudX, hudY3);
+      textSize(36);
+      text(targetScore, hudX, hudY3 + 28);
+    }
+  
+    // restore default
+    quitBtn.display();
+    rectMode(CENTER);
+    textAlign(LEFT, BASELINE);
+  }
+  boolean handleClick(int x, int y) {
+    // returns true if the player clicked Quit, false otherwise
+    if (quitBtn.within(x, y)) return true;
+    selectTile(x, y);
+    return false;
+  }
+  
+  void saveScore() {
+    // add "mode,score" line to scores.txt (mode 1=level, 2=endless)
+    int mode = isLevelMode ? 1 : 2;
+    String newLine = mode + "," + score;
+  
+    String[] existing = loadStrings("scores.txt");
+    String[] updated;
+    if (existing == null || existing.length == 0) {
+      updated = new String[] { newLine };
+    } else {
+      updated = new String[existing.length + 1];
+      for (int i = 0; i < existing.length; i++) updated[i] = existing[i];
+      updated[existing.length] = newLine;
+    }
+    saveStrings("scores.txt", updated);
+    println("saved score: " + newLine);
   }
 
   void selectTile(int x, int y) {//player click tile
@@ -195,18 +283,83 @@ class Board {
   }
   return all;
 }
-
+  
   void processMatches() {
     // find/clear/drop/refill in a loop until there aren't cascades
-    ArrayList<Tile> matches = findAllMatches();
-    while (matches.size() > 0) {
-      print("found a match of size: ");
-      println(matches.size());
-      clearMatches(matches);
+    ArrayList<ArrayList<Tile>> groups = findAllMatchGroups();
+    while (groups.size() > 0) {
+      // score each match group separately, then flatten to clear
+      ArrayList<Tile> allMatched = new ArrayList<Tile>();
+      for (int g = 0; g < groups.size(); g++) {
+        ArrayList<Tile> group = groups.get(g);
+        int pts = scoreForMatch(group.size());
+        score += pts;
+        print("match of size "); print(group.size());
+        print(" -> +"); print(pts);
+        print(" (total: "); print(score); println(")");
+        for (int t = 0; t < group.size(); t++) {
+          if (!allMatched.contains(group.get(t))) allMatched.add(group.get(t));
+        }
+      }
+      clearMatches(allMatched);
       dropTiles();
-      matches = findAllMatches();
+      groups = findAllMatchGroups();
     }
   }
+  
+  int scoreForMatch(int n) {
+    // 3->3, 4->6, 5->8, 6->10, 7->12, 8->14, then +2 per tile beyond
+    if (n < 3) return 0;
+    if (n == 3) return 3;
+    return 2 * n - 2;
+  }
+  
+  ArrayList<ArrayList<Tile>> findAllMatchGroups() {
+    // each horizontal/vertical run of 3+ is one group (L/T shapes count as two groups, which stacks bonus)
+    ArrayList<ArrayList<Tile>> groups = new ArrayList<ArrayList<Tile>>();
+  
+    // horizontal runs
+    for (int j = 0; j < rows; j++) {
+      int i = 0;
+      while (i < cols) {
+        int runStart = i;
+        int type = grid[i][j].getType();
+        while (i + 1 < cols && grid[i + 1][j].getType() == type) i++;
+        if (i - runStart + 1 >= 3) {
+          ArrayList<Tile> run = new ArrayList<Tile>();
+          for (int k = runStart; k <= i; k++) run.add(grid[k][j]);
+          groups.add(run);
+        }
+        i++;
+      }
+    }
+  
+    // vertical runs
+    for (int i = 0; i < cols; i++) {
+      int j = 0;
+      while (j < rows) {
+        int runStart = j;
+        int type = grid[i][j].getType();
+        while (j + 1 < rows && grid[i][j + 1].getType() == type) j++;
+        if (j - runStart + 1 >= 3) {
+          ArrayList<Tile> run = new ArrayList<Tile>();
+          for (int k = runStart; k <= j; k++) run.add(grid[i][k]);
+          groups.add(run);
+        }
+        j++;
+      }
+    }
+  
+    return groups;
+  }
+  
+  int timeRemainingMs() {
+    if (!isLevelMode) return -1;
+    return max(0, timeLimitMs - (millis() - startTimeMs));
+  }
+  
+  boolean isTimeUp()      { return isLevelMode && timeRemainingMs() == 0; }
+  boolean reachedTarget() { return isLevelMode && score >= targetScore; }
 
   int clearMatches(ArrayList<Tile> matched) {
   //null grid spots of matched tiles
