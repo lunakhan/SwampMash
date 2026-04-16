@@ -1,5 +1,6 @@
 import processing.sound.*;
 PImage menuBackground;
+PImage albertImg;
 
 class Menu {
   //for displaying submenus
@@ -82,6 +83,16 @@ class Menu {
   void display() {
     //display background and colors
     image(menuBackground, 0, 0, width, height);
+
+    //Draw albert in the middle
+   if (albertImg != null) {
+    imageMode(CENTER);
+    float targetW = 300; 
+    float aspect = (float) albertImg.height / (float) albertImg.width;
+    float targetH = targetW * aspect;
+    image(albertImg, width/2, height/2 + 160, targetW, targetH);
+    imageMode(CORNER);
+}
     //label flips once level 2 is unlocked
     easy.s = level2Unlocked ? "level 2" : "level 1";
     easy.display();
