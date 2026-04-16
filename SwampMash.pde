@@ -5,6 +5,7 @@ int gamestate;
 //1 = play game(levels)
 //2 = play game(endless)
 //3 = game over
+//4 = level 2
 
 Menu m;
 Board b;
@@ -24,7 +25,7 @@ void setup() {
 void draw() {
   background(150);
   if (gamestate == 0) m.display();
-  else if (gamestate == 1 || gamestate == 2) {
+  else if (gamestate == 1 || gamestate == 2 || gamestate == 4) {
     if (backgroundImg != null) image(backgroundImg, 0, 0, width, height);
     if (b != null) {
       b.display();
@@ -60,14 +61,14 @@ void mousePressed() {
   if (gamestate == 0) {
     gamestate = m.processClick(mouseX, mouseY);
     // changed to work for endless mode (hopefully)
-    if ((gamestate == 1 || gamestate == 2) && b == null) {
+    if ((gamestate == 1 || gamestate == 2 || gamestate == 4) && b == null) {
       b = new Board(this, gamestate);
     }
     if (gamestate != 0) {
       print("switching gamestate to: ");
       print(gamestate);
     }
-  } else if (gamestate == 1 || gamestate == 2) {
+  } else if (gamestate == 1 || gamestate == 2 || gamestate == 4) {
     if (b.handleClick(mouseX, mouseY)) endGame();
   } else if (gamestate == 3) {
     // dismiss game over -> back to menu
@@ -78,7 +79,7 @@ void mousePressed() {
 
 void keyPressed() {
   // input only during active gameplay
-  if (b != null && (gamestate == 1 || gamestate == 2)) {
+  if (b != null && (gamestate == 1 || gamestate == 2 || gamestate == 4)) {
     boolean swapped = false;
     if (keyCode == UP)         { b.swapTiles('u'); swapped = true; }
     else if (keyCode == DOWN)  { b.swapTiles('d'); swapped = true; }
@@ -89,9 +90,11 @@ void keyPressed() {
 }
 
 void endGame() {
-  // "game is over" transitions
-  // save once, then show end screen
   if (gamestate != 3 && b != null) {
+    // unlock level 2 if player just won level 1
+    if (gamestate == 1 && b.reachedTarget()) {
+      m.unlockLevel2();
+    }
     b.saveScore();
     gamestate = 3;
   }

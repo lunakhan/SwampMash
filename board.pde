@@ -11,6 +11,7 @@ class Board {
   boolean isLevelMode;
   int timeLimitMs;
   int targetScore;
+  int mode;   // 1=level1, 2=endless, 4=level2
   Button quitBtn;
 
   //2D array of tiles
@@ -32,6 +33,7 @@ class Board {
     rows = 8;
     cols = 8;
     cellSize = Constants.cellSize;
+    this.mode = mode;
     boardX = 20;
     boardY = height/2 - (cellSize * rows)/2;
   
@@ -42,10 +44,13 @@ class Board {
   
     // timer and score
     score = 0;
-    isLevelMode = (mode == 1);
+    isLevelMode = (mode == 1 || mode == 4);
     startTimeMs = millis();
     timeLimitMs = 60000;   // 60 seconds for level mode
-    targetScore = 50;     // winning target for level mode
+    
+    if (mode == 1) targetScore = 50;
+    else if (mode == 4) targetScore = 70;
+    else targetScore = 0;   // endless
     
     // quit to save scores into txt
     quitBtn = new Button(700, 380, 160, 55, "Quit & Save", 20, 70, color(200, 50, 50));
@@ -136,8 +141,7 @@ class Board {
   }
   
   void saveScore() {
-    // add "mode,score" line to scores.txt (mode 1=level, 2=endless)
-    int mode = isLevelMode ? 1 : 2;
+    // add "mode,score" line to scores.txt
     String newLine = mode + "," + score;
   
     String[] existing = loadStrings("scores.txt");

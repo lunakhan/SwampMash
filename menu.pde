@@ -14,6 +14,8 @@ class Menu {
   //previous highscores
   int highscore1;
   int highscore2;
+  int highscore3;
+  boolean level2Unlocked;
 
   //sound variables
   PApplet parent;
@@ -45,20 +47,30 @@ class Menu {
     //load sounds
     acceptClick = new SoundFile(parent, "Assets/Audio/Menu1Select.wav");
     backClick = new SoundFile(parent, "Assets/Audio/Menu1Back.wav");
+    
+    // load level 2 unlock state
+    level2Unlocked = loadUnlockState();
+    // re-read scores to also grab level 2 highscore
+    refreshHighscores();
   }
 
   int[] getHighscores() {
     //read scores file and find max value for easy and hard game modes
     //index 0: highscore for level games
     //index 1: highscore for endless games
-    int[] ret = {0, 0};
+    int[] ret = {0, 0, 0};
     BufferedReader r = createReader("scores.txt");
+    if (r == null) return ret;
     String line = null;
     try {
       while ((line = r.readLine()) != null) {
         String[] score = split(line, ',');
-        if (int(score[0]) == 1) ret[0] = max(ret[0], int(score[1]));
-        else if (int(score[0]) == 2) ret[1] = max(ret[1], int(score[1]));
+        if (score.length < 2) continue;
+        int m = int(score[0]);
+        int s = int(score[1]);
+        if (m == 1)      ret[0] = max(ret[0], s);
+        else if (m == 2) ret[1] = max(ret[1], s);
+        else if (m == 4) ret[2] = max(ret[2], s);
       }
     }
     catch (IOException e) {
@@ -70,6 +82,8 @@ class Menu {
   void display() {
     //display background and colors
     image(menuBackground, 0, 0, width, height);
+    //label flips once level 2 is unlocked
+    easy.s = level2Unlocked ? "level 2" : "level 1";
     easy.display();
     hard.display();
     i.display();
@@ -88,7 +102,12 @@ class Menu {
       rect(400, 300, 600, 400);
       textSize(30);
       fill(0);
-      text("Level Mode Highscore:\n" + str(highscore1) + "\n\nEndless Mode HighScore:\n" + str(highscore2), 180, 180);
+      String hsText = "Level 1 Highscore:\n" + str(highscore1)
+                    + "\n\nEndless Highscore:\n" + str(highscore2);
+      if (level2Unlocked) {
+        hsText += "\n\nLevel 2 Highscore:\n" + str(highscore3);
+      }
+      text(hsText, 180, 180);
     }
   }
 
@@ -107,7 +126,7 @@ class Menu {
     else {
       if (easy.within(x, y)) {
         acceptClick.play();
-        return 1;
+        return level2Unlocked ? 4 : 1;   // 4 = level 2, 1 = level 1
       } // start easy game
       if (hard.within(x, y)) {
         acceptClick.play();
@@ -130,5 +149,19 @@ class Menu {
     int[] scores = getHighscores();
     highscore1 = scores[0];
     highscore2 = scores[1];
+    highscore3 = scores[2];
+  }
+  
+  boolean loadUnlockState() {
+    String[] lines = loadStrings("unlocks.txt");
+    if (lines == null || lines.length == 0) return false;
+    return lines[0].trim().equals("level2");
+  }
+  
+  void unlockLevel2() {
+    if (level2Unlocked) return;   // already unlocked, no need to rewrite
+    level2Unlocked = true;
+    saveStrings("unlocks.txt", new String[] { "level2" });
+    println("level 2 unlocked!");
   }
 }
